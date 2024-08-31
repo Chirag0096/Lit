@@ -1,0 +1,21 @@
+.chat-title {
+    padding: 2% 5%;
+    width: 85%;
+    height: 5%;
+    overflow: hidden;
+    text-overflow: ellipsis; 
+    
+    display: flex;
+    align-items: center;
+    margin: 4% 0;
+    border-radius: 8px;
+}
+
+.chat-title:hover {
+    cursor: pointer;
+    background-color: #4342427b;
+}
+
+.active {
+    background-color: #434242c0;
+}

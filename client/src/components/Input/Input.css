@@ -1,0 +1,25 @@
+
+.input {
+    width: 60%;
+    height: 30%;
+
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input input {
+    width: 80%;
+    border-radius: 16px;
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.389);
+    padding: 2% 2%;
+    height: 30%;
+    background-color: rgba(94, 92, 92, 0.716);
+}
+
+.send-icon {
+    position: absolute;
+    right: 10%;
+}

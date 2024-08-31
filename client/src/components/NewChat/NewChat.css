@@ -1,0 +1,18 @@
+.newChat {
+    width: 88%;
+    height: 4%;
+
+    display: flex;
+    align-items: center;
+    padding: 2% 5%;
+    border-radius: 10px;
+}
+
+.newChat p {
+    margin: 0 1rem;
+}
+
+.newChat:hover {
+    cursor: pointer;
+    background-color: #4342427b;
+}
