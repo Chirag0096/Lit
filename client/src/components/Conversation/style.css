@@ -1,0 +1,19 @@
+.human {
+    padding: 2% 2%;
+    width: 56%;
+    margin: 2% 0;
+    margin-left: auto;
+    border-radius: 14px;
+    background-color: rgba(57, 55, 55, 0.778);
+}
+
+.ai {
+    padding: 2% 2%;
+    width: 56%;
+}
+
+.ai p{
+    display: inline;
+    padding: 0% 2%;
+    width: 100%;
+}

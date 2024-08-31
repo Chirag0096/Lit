@@ -1,0 +1,20 @@
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    height: 8%;
+    padding: 0 2%;
+    width: 95%;
+    font-size: 40px;
+}
+
+.logo{
+    height:40px;
+    width: 40px;
+}
+
+.signInButton {
+    font-size: 18px;
+    padding: 0.5rem;
+}
