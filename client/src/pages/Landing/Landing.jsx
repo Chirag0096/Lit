@@ -7,26 +7,6 @@ import Encrypted from '../../assets/Encrypted.svg';
 import Analysis from '../../assets/Analysis.svg';
 
 const Landing = () => {
-  const [tvl, settvl] = useState("");
-  
-
-  const fetchTVL = () => {
-    const options = {method: 'GET'};
-
-    fetch('https://api.eigenexplorer.com/metrics/tvl', options)
-    .then(response => response.json())
-    .then(response => settvl(response.tvl))
-    .catch(err => console.error(err));
-  }
-
-  useEffect(() => {
-    fetchTVL()
-    setInterval(() => {
-      fetchTVL()
-    }, 4000);
-  }, [])
-  
-
   return (
     <React.Fragment>
       <main>
@@ -45,7 +25,7 @@ const Landing = () => {
             <h1>Your Secure Path to Smarter Healthcare</h1>
             <p>A cutting-edge healthcare assistant app that ensures privacy with AI-driven medical support and blockchain security</p>
             <div className="btn-container">
-              <button className="btn-primary"><Link href="/app">Go to app</Link></button>
+              <button className="btn-primary"><Link to="/app">Go to app</Link></button>
               {/* <button className="btn-secondary"><Link href="https://nodezilla.onrender.com/docs">Explore API</Link></button> */}
             </div>
             <div className="label">
