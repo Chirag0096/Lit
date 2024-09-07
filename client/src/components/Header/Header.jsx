@@ -15,6 +15,8 @@ const Header = ({user}) => {
       {user && 
         <SignOut />
       }
+
+      <w3m-button />
     </div>
   )
 }
