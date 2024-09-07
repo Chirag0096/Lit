@@ -4,6 +4,10 @@ const bodyParser = require('body-parser');
 const app = express();
 app.use(bodyParser.json());
 
+app.get('/api/', (req, res) => {
+  res.json("Healthy")
+})
+
 app.post('/api/message', (req, res) => {
   const { message } = req.body;
 

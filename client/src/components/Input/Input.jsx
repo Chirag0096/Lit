@@ -3,6 +3,7 @@ import { IoMdSend } from "react-icons/io";
 import { FiLoader } from "react-icons/fi";
 
 import "./Input.css";
+import { encryptBrainTumorImage } from '../../js/lit';
 
 const Input = ({ query, currentChat, user, loading, setloading, getNewChat }) => {
   const [inputField, setinputField] = useState("");
@@ -18,9 +19,13 @@ const Input = ({ query, currentChat, user, loading, setloading, getNewChat }) =>
   const triggerQuery = () => {
     if (imageBase64) {
       console.log(imageBase64);
+      const base64Image = imageBase64.split(',')[1];
+      const { ciphertext, dataToEncryptHash } = encryptBrainTumorImage(base64Image);
+
+      console.log(ciphertext, dataToEncryptHash);
       
       // Handle image query with base64 string
-      query(imageBase64.split(',')[1]);
+      // query();
     } else {
       console.log("here");
       
