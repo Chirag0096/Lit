@@ -17,7 +17,7 @@ const Landing = () => {
             <Link href="#why-us">Why us?</Link>  
             <Link href="#features">Features</Link>  
             <Link href="https://www.google.com">Blogs</Link>  
-            <Link href="https://github.com/prakhar728/NodeZilla">About</Link>  
+            <Link href="https://github.com/Chirag0096/Lit">About</Link>  
           </ul>
         </header>
         <section>

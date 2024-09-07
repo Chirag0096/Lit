@@ -1,25 +1,36 @@
-
 .input {
     width: 60%;
-    height: 30%;
-
+    height: auto; /* Adjust height for flexibility with new image input */
     position: relative;
     display: flex;
+    flex-direction: column; /* Arrange inputs vertically */
     align-items: center;
     justify-content: center;
 }
 
-.input input {
+.input input[type="text"] {
     width: 80%;
     border-radius: 16px;
     outline: none;
     border: 1px solid rgba(0, 0, 0, 0.389);
     padding: 2% 2%;
-    height: 30%;
+    height: 30px; /* Set a fixed height for text input */
     background-color: rgba(94, 92, 92, 0.716);
+    margin-bottom: 10px; /* Space between text input and file input */
+}
+
+.input input[type="file"] {
+    width: 80%;
+    margin-top: 10px; /* Add some space from the text input */
+    border: none; /* No border for file input */
+    padding: 5px 0;
 }
 
 .send-icon {
     position: absolute;
     right: 10%;
+    top: 50%; /* Adjust to vertically center next to the text input */
+    transform: translateY(-50%);
+    cursor: pointer;
+    font-size: 1.5em; /* Increase size for visibility */
 }

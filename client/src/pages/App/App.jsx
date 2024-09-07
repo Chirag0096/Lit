@@ -141,29 +141,44 @@ function App() {
 
 
   function formatAnswer(rawString) {
-    // Split the string into separate sections based on line breaks
-    const sections = rawString.split(/\r?\n\n/);
-  
+    // Split the string into lines based on line breaks
+    const lines = rawString.split(/\r?\n/);
+    
     // Define an empty array to store the formatted answer parts
     const formattedAnswer = [];
+    
+    let isCodeBlock = false;
+    let codeContent = [];
   
-    for (const section of sections) {
-      // Check if the section contains a code block
-      if (section.startsWith('```')) {
-        // Extract the code block (everything between the opening and closing markers)
-        const codeBlock = section.slice(3, section.length - 3);
-  
-        // Wrap the code block in a separate element (e.g., a div)
-        formattedAnswer.push(<div className="code-block"><pre><code>{codeBlock}</code></pre></div>);
-      } else {
-        // If not a code block, treat it as regular text
-        formattedAnswer.push(<p>{section}</p>);
+    for (const line of lines) {
+      // Check for code block start/end markers
+      if (line.startsWith('```')) {
+        if (isCodeBlock) {
+          // Closing code block
+          formattedAnswer.push(
+            <div className="code-block">
+              <pre><code>{codeContent.join('\n')}</code></pre>
+            </div>
+          );
+          codeContent = [];
+        }
+        isCodeBlock = !isCodeBlock;
+      } else if (isCodeBlock) {
+        // If inside a code block, keep adding lines to the codeContent
+        codeContent.push(line);
+      } else if (line.startsWith('>')) {
+        // If the line is a quote (starting with '>'), render it as a blockquote
+        formattedAnswer.push(<blockquote>{line.slice(1).trim()}</blockquote>);
+      } else if (line.trim()) {
+        // Render normal text as a paragraph
+        formattedAnswer.push(<p>{line.trim()}</p>);
       }
     }
   
     // Return the formatted answer as an array of React elements
     return formattedAnswer;
   }
+  
   
 
   return (
