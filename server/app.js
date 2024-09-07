@@ -5,7 +5,7 @@ const axios = require('axios');
 require('dotenv').config();
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
 app.use(cors());
 
 const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@reactapp.0ltwq.mongodb.net/?retryWrites=true&w=majority&appName=ReactApp`;
@@ -70,8 +70,7 @@ async function insertChat(userType, author, chatId, message) {
 async function getAns(query) {
   try {
 
-    return "This is the response"
-    const res = await axios.post(process.env.MODEL_URI + '/predict', { query });
+    const res = await axios.post(process.env.MODEL_URI + '/send-message', { "image": query });
     return res.data.response;
   } catch (error) {
     console.error(error);
