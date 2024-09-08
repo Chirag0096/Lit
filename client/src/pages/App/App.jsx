@@ -144,11 +144,18 @@ function App() {
   };
 
   const formatAnswer = (rawString) => {
+    // Check if "<|assistant|>" is present
+    const assistantIndex = rawString.indexOf("<|assistant|>");
+    if (assistantIndex !== -1) {
+      // If present, only process the text after "<|assistant|>"
+      rawString = rawString.substring(assistantIndex + "<|assistant|>".length).trim();
+    }
+  
     const lines = rawString.split(/\r?\n/);
     const formattedAnswer = [];
     let isCodeBlock = false;
     let codeContent = [];
-
+    
     lines.forEach((line) => {
       if (line.startsWith('```')) {
         if (isCodeBlock) {
@@ -168,7 +175,7 @@ function App() {
         formattedAnswer.push(<p>{line.trim()}</p>);
       }
     });
-
+    
     return formattedAnswer;
   };
 

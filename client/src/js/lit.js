@@ -151,7 +151,7 @@ export const encryptBrainTumorImage = async (imageBase64, signer) => {
       chain: 'ethereum',
     });
 
-    const response = await fetch("https://e413-34-145-35-23.ngrok-free.app/send-message", {
+    const response = await fetch("https://dd9c-34-145-35-23.ngrok-free.app/send-message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ image: decryptedImage }),
