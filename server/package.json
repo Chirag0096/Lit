@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@lit-protocol/lit-node-client-nodejs": "^6.4.10",
     "axios": "^1.7.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

@@ -2,6 +2,7 @@ const express = require('express');
 const { MongoClient, ObjectId } = require('mongodb');
 const cors = require('cors');
 const axios = require('axios');
+const { decryptImageAndSendToApi } = require('./lit');
 require('dotenv').config();
 
 const app = express();
@@ -110,6 +111,15 @@ app.post('/query/:chatId', async (req, res) => {
   const chatId = req.params.chatId;
   const { query } = req.body;
 
+  console.log(query);
+
+  if (query["type"] == "image") {
+    const response = await decryptImageAndSendToApi(query["ciphertext"], query["dataToEncryptHash"], query["sessionSig"])
+    console.log(response);
+    
+  }
+  
+  return;
   await insertChat('user', userId, chatId, query);
   const response = await getAns(query);
   await insertChat('model', userId, chatId, response);
