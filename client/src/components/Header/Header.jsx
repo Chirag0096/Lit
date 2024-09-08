@@ -1,24 +1,21 @@
-import React from 'react'
-import { FaRobot } from "react-icons/fa6";
+import React from 'react';
 import logo from "../../assets/Logo.png";
-
-import './style.css';
-import { signOutUser } from '../../js/auth';
-import SignIn from '../SignIn/SignIn';
 import SignOut from '../SignOut/SignOut';
+import './Header.css';
 
-const Header = ({user}) => {
+const Header = ({ user }) => {
   return (
-    <div className="header">
-      <img src={logo} alt="logo" className="logo"/>
+    <header className="header">
+      <div className="header-left">
+        <img src={logo} alt="logo" className="logo-header"/>
+        <h1 className="app-title">AI Chat</h1>
+      </div>
+      <div className="header-right">
+        {user && <SignOut />}
+        <w3m-button />
+      </div>
+    </header>
+  );
+};
 
-      {user && 
-        <SignOut />
-      }
-
-      <w3m-button />
-    </div>
-  )
-}
-
-export default Header
+export default Header;

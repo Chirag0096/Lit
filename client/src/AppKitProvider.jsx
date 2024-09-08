@@ -14,7 +14,7 @@ const projectId = import.meta.env.VITE_APP_WALLETCONNECT_ID; // Replace with you
 const metadata = {
   name: 'AppKit',
   description: 'AppKit Example',
-  url: 'http://localhost:5173/', // Ensure this URL matches your domain or subdomain
+  url: 'http://localhost:5173', // Ensure this URL matches your domain or subdomain
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
 };
 

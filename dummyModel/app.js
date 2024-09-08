@@ -10,7 +10,8 @@ app.get('/api/', (req, res) => {
 
 app.post('/api/message', (req, res) => {
   const { message } = req.body;
-
+  console.log(message);
+  
   if (message) {
     res.json({ response: "The model is working." });
   } else {

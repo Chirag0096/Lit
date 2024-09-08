@@ -1,15 +1,67 @@
 .SignIn {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 40%;
-    height: 30%;
-
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
-    background-color: rgba(0, 0, 0, 0.185);
-    border-radius: 16px;
-}
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .SignIn h2 {
+    font-size: 24px;
+    margin-bottom: 30px;
+    font-weight: 600;
+  }
+  
+  .signInButton {
+    background-color: #0084ff;
+    color: #ffffff;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 24px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    outline: none;
+  }
+  
+  .signInButton:hover {
+    background-color: #0056b3;
+  }
+  
+  .signInButton:active {
+    transform: scale(0.98);
+  }
+  
+  /* Responsive design */
+  @media (max-width: 600px) {
+    .SignIn h2 {
+      font-size: 20px;
+    }
+  
+    .signInButton {
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+  }
+  
+  /* Optional: Add a subtle animation for the sign-in button */
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(0, 132, 255, 0.4);
+    }
+    70% {
+      box-shadow: 0 0 0 10px rgba(0, 132, 255, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(0, 132, 255, 0);
+    }
+  }
+  
+  .signInButton {
+    animation: pulse 2s infinite;
+  }
