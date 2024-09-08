@@ -8,7 +8,7 @@ const Header = ({ user }) => {
     <header className="header">
       <div className="header-left">
         <img src={logo} alt="logo" className="logo-header"/>
-        <h1 className="app-title">AI Chat</h1>
+        <h1 className="app-title">Documed</h1>
       </div>
       <div className="header-right">
         {user && <SignOut />}
