@@ -1,7 +1,6 @@
 import axios from "axios";
 
-// const baseURL = "http://127.0.0.1:8000/";
-const baseURL = "https://documed.onrender.com/";
+const baseURL = import.meta.env.VITE_APP_PROD_URL || "http://127.0.0.1:8000/";
 
 const api = axios.create({
   baseURL: baseURL,

@@ -141,7 +141,8 @@ export const encryptBrainTumorImage = async (imageBase64, signer) => {
       ability: LitAbility.AccessControlConditionDecryption,
     },
   ]);
-
+  console.log("Model url", import.meta.env.VITE_APP_MODEL_URL);
+  
   const code = `(async () => {
     const decryptedImage = await Lit.Actions.decryptAndCombine({
       accessControlConditions,
@@ -151,7 +152,7 @@ export const encryptBrainTumorImage = async (imageBase64, signer) => {
       chain: 'ethereum',
     });
 
-    const response = await fetch("https://dd9c-34-145-35-23.ngrok-free.app/send-message", {
+    const response = await fetch("${import.meta.env.VITE_APP_MODEL_URL}/send-message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ image: decryptedImage }),
