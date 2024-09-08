@@ -45,4 +45,19 @@ const queryModel = async (userId, chatId, query) => {
   );
 };
 
-export { getAllChats, getChat, queryModel, newChat };
+
+const queryImageModel = async (userId, chatId, query) => {
+  return await api.post(
+    `/imagequery/${chatId}`,
+    {
+      query: query
+    },
+    {
+      headers: {
+        "user-id": userId,
+      },
+    }
+  )
+}
+
+export { getAllChats, getChat, queryModel, newChat, queryImageModel };

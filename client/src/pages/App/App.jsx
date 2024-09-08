@@ -9,7 +9,7 @@ import Input from '../../components/Input/Input';
 import SignIn from '../../components/SignIn/SignIn';
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth } from '../../js/auth';
-import { getAllChats, getChat, newChat, queryModel } from '../../js/api';
+import { getAllChats, getChat, newChat, queryImageModel, queryModel } from '../../js/api';
 import { useSignMessage } from 'wagmi';
 
 function App() {
@@ -36,7 +36,6 @@ function App() {
     if (user) {
       populateData();
       // Sign a message to get the user's signature when the app starts
-      signMessage({ message: 'Sign this message to authenticate your session in the app.' });
     } else {
       clearChatData();
     }
@@ -117,6 +116,27 @@ function App() {
     }
   };
 
+
+  const queryImageDetection = async (queryData) => {
+    setLoading(true);
+    try {
+      const res = await queryImageModel(user.uid, currentChat, queryData);
+      const newConversation = [
+        { author: 'user', message: 'sent brain scan image' },
+        { author: 'model', message: res.data.response },
+      ];
+      setConversations([...conversations, ...newConversation]);
+
+      if (conversations.length === 1) {
+        populateData();
+      }
+    } catch (err) {
+      console.error('Error during query:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const scrollToBottom = () => {
     if (convo.current) {
       convo.current.scrollTop = convo.current.scrollHeight;
@@ -189,6 +209,7 @@ function App() {
               setLoading={setLoading}
               getNewChat={getNewChat}
               userSignature={userSignature}
+              queryImageDetection={queryImageDetection}
             />
           </div>
         </div>

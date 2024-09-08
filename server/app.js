@@ -71,7 +71,7 @@ async function insertChat(userType, author, chatId, message) {
 async function getAns(query) {
   try {
 
-    const res = await axios.post(process.env.MODEL_URI + '/send-message', { "image": query });
+    const res = await axios.post(process.env.MODEL_URI + '/send-message', { "message": query });
     return res.data.response;
   } catch (error) {
     console.error(error);
@@ -111,20 +111,25 @@ app.post('/query/:chatId', async (req, res) => {
   const chatId = req.params.chatId;
   const { query } = req.body;
 
-  console.log(query);
-
-  if (query["type"] == "image") {
-    const response = await decryptImageAndSendToApi(query["ciphertext"], query["dataToEncryptHash"], query["sessionSig"])
-    console.log(response);
-    
-  }
   
-  return;
   await insertChat('user', userId, chatId, query);
   const response = await getAns(query);
   await insertChat('model', userId, chatId, response);
 
   res.json({ response });
+});
+
+
+app.post('/imagequery/:chatId', async (req, res) => {
+  const userId = req.headers['user-id'];
+  const chatId = req.params.chatId;
+  const { query } = req.body;
+
+  
+  await insertChat('user', userId, chatId, 'Sent an image.');
+  await insertChat('model', userId, chatId, query);
+
+  res.json({ query });
 });
 
 const port = process.env.PORT || 8000;

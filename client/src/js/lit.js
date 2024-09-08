@@ -1,143 +1,236 @@
 import { LitNetwork, LIT_RPC } from "@lit-protocol/constants";
 import { LitNodeClient, encryptString } from "@lit-protocol/lit-node-client";
-import { LitContracts } from "@lit-protocol/contracts-sdk";
 import {
   LitAbility,
   LitAccessControlConditionResource,
   createSiweMessage,
   generateAuthSig,
+  LitActionResource,
+  createSiweMessageWithRecaps
 } from "@lit-protocol/auth-helpers";
 
 // Create a single LitNodeClient instance to be reused
 let litNodeClient = null;
 
+// Get or create LitNodeClient
 export const getLitNodeClient = async () => {
   if (!litNodeClient) {
-    litNodeClient = new LitNodeClient({ litNetwork: 'datil-dev' }); // Use your desired network
+    litNodeClient = new LitNodeClient({ litNetwork: LitNetwork.DatilTest }); // Use your desired network
     await litNodeClient.connect();
   }
   return litNodeClient;
 };
 
-export const getSessionSigsViaAuthSig = async (capacityTokenId, signer) => {
-  console.log(signer);
+// Helper function to generate AuthSig
+const genAuthSig = async (wallet, client, uri, resources) => {
+  const blockHash = await client.getLatestBlockhash();
+  const message = await createSiweMessageWithRecaps({
+    walletAddress: await wallet.getAddress(),
+    nonce: blockHash,
+    litNodeClient: client,
+    resources,
+    expiration: ONE_WEEK_FROM_NOW,
+    uri,
+  });
   
-  let sessionSignatures = null;
+  return generateAuthSig({
+    signer: wallet,
+    toSign: message,
+    address: wallet.address,
+  });
+};
 
+// Generate session signatures using AuthSig
+const genSession = async (wallet, client, resources) => {
+  return await client.getSessionSigs({
+    chain: "ethereum",
+    resourceAbilityRequests: resources,
+    authNeededCallback: async (params) => {
+      const authSig = await genAuthSig(wallet, client, params.uri, params.resourceAbilityRequests ?? []);
+      return authSig;
+    },
+  });
+};
+
+// Get session signatures via AuthSig
+export const getSessionSigsViaAuthSig = async (signer) => {
   try {
-    // Create the LitNodeClient
     const litNodeClient = await getLitNodeClient();
-
-    // Fetch the wallet signer using wagmi (signer is connected through WalletConnect or similar)
 
     if (!signer) {
       console.error("No signer available");
       return;
     }
 
-    console.log("🔄 Connecting LitContracts client to network...");
-    console.log(signer);
-    
-    const litContracts = new LitContracts({
-      signer,
-      network: LitNetwork.DatilTest,
-      debug: false,
-    });
-    await litContracts.connect();
-    console.log("✅ Connected LitContracts client to network");
-
-    // Mint capacity credits if no token ID is passed
-    if (!capacityTokenId) {
-      console.log("🔄 Minting Capacity Credits NFT...");
-      const mintResult = await litContracts.mintCapacityCreditsNFT({
-        requestsPerKilosecond: 10,
-        daysUntilUTCMidnightExpiration: 1,
-      });
-      capacityTokenId = mintResult.capacityTokenIdStr;
-      console.log(`✅ Minted new Capacity Credit with ID: ${capacityTokenId}`);
-    }
-
-    // Create capacityDelegationAuthSig using the signer
-    console.log("🔄 Creating capacityDelegationAuthSig...");
-    const { capacityDelegationAuthSig } =
-      await litNodeClient.createCapacityDelegationAuthSig({
-        dAppOwnerWallet: signer,
-        capacityTokenId,
-        delegateeAddresses: [await signer.getAddress()],
-        uses: "1",
-      });
-    console.log(`✅ Created the capacityDelegationAuthSig`);
-
-    // Generate session signatures using the capacityDelegationAuthSig
-    console.log("🔄 Getting Session Sigs via an Auth Sig...");
-    sessionSignatures = await litNodeClient.getSessionSigs({
+    // Generate session signatures
+    return await litNodeClient.getSessionSigs({
       chain: "ethereum",
-      expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(), // 10 minutes expiration
-      capabilityAuthSigs: [capacityDelegationAuthSig],
+      expiration: new Date(Date.now() + 1000 * 60 * 10).toISOString(),
       resourceAbilityRequests: [
         {
           resource: new LitAccessControlConditionResource("*"),
           ability: LitAbility.AccessControlConditionDecryption,
         },
       ],
-      authNeededCallback: async ({ uri, expiration, resourceAbilityRequests }) => {
+      authNeededCallback: async (params) => {
         const toSign = await createSiweMessage({
-          uri,
-          expiration,
-          resources: resourceAbilityRequests,
+          uri: params.uri,
+          expiration: params.expiration,
+          resources: params.resourceAbilityRequests,
           walletAddress: await signer.getAddress(),
           nonce: await litNodeClient.getLatestBlockhash(),
           litNodeClient,
         });
 
-        const signedMessage = await signer.signMessage(toSign);
-
         return await generateAuthSig({
-          signer,
-          toSign: signedMessage,
+          signer: signer,
+          toSign,
         });
       },
     });
-    console.log("✅ Got Session Sigs via an Auth Sig");
-
-    return sessionSignatures;
   } catch (error) {
     console.error("Error during session sig generation:", error);
   }
 };
 
+const ONE_WEEK_FROM_NOW = new Date(
+  Date.now() + 1000 * 60 * 60 * 24 * 7
+).toISOString();
+
 // Encrypt the brain tumor image
-export const encryptBrainTumorImage = async (imageBase64, sessionSigs) => {
-  const client = await getLitNodeClient(); // Reuse or create LitNodeClient
+export const encryptBrainTumorImage = async (imageBase64, signer) => {
+  const client = await getLitNodeClient();
 
   const accessControlConditions = [
     {
-      contractAddress: '',
-      standardContractType: '',
-      chain: 'ethereum',
-      method: 'eth_getBalance',
-      parameters: [':userAddress', 'latest'],
+      contractAddress: "",
+      standardContractType: "",
+      chain: "ethereum",
+      method: "eth_getBalance",
+      parameters: [":userAddress", "latest"],
       returnValueTest: {
-        comparator: '>=',
-        value: '0',
+        comparator: ">=",
+        value: "0",
       },
     },
   ];
+
+  const sessionSigs = await getSessionSigsViaAuthSig(signer);
 
   // Encrypt the image (Base64 string)
   const { ciphertext, dataToEncryptHash } = await encryptString(
     {
       accessControlConditions,
-      dataToEncrypt: imageBase64, // The image in Base64 format
-      chain: 'ethereum',
-      sessionSigs: sessionSigs, // Pass the sessionSigs here
+      dataToEncrypt: imageBase64,
     },
     client
   );
 
-  console.log("Encrypted Image:", ciphertext);
-  console.log("Hash:", dataToEncryptHash);
+  const accsResourceString = await LitAccessControlConditionResource.generateResourceString(
+    accessControlConditions,
+    dataToEncryptHash
+  );
+  
+  const sessionForDecryption = await genSession(signer, client, [
+    {
+      resource: new LitActionResource("*"),
+      ability: LitAbility.LitActionExecution,
+    },
+    {
+      resource: new LitAccessControlConditionResource(accsResourceString),
+      ability: LitAbility.AccessControlConditionDecryption,
+    },
+  ]);
 
-  // Return ciphertext and hash for later use (e.g., decryption)
-  return { ciphertext, dataToEncryptHash };
+  const code = `(async () => {
+    const decryptedImage = await Lit.Actions.decryptAndCombine({
+      accessControlConditions,
+      ciphertext,
+      dataToEncryptHash,
+      authSig: null,
+      chain: 'ethereum',
+    });
+
+    const response = await fetch("https://e413-34-145-35-23.ngrok-free.app/send-message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image: decryptedImage }),
+    });
+
+    const apiResponse =  JSON.stringify(await response.json());
+
+    Lit.Actions.setResponse({ response: apiResponse });
+  })();`;
+
+  const result = await client.executeJs({
+    code,
+    sessionSigs: sessionForDecryption,
+    jsParams: {
+      accessControlConditions,
+      ciphertext,
+      dataToEncryptHash,
+    },
+  });
+
+  console.log("Response from Lit Action:", JSON.parse(result.response).response);
+
+  return JSON.parse(result.response).response;
+};
+
+// Execute Brain Tumor Analysis
+export const executeBrainTumourAnalysis = async (ciphertext, dataToEncryptHash, signer) => {
+  const client = await getLitNodeClient();
+
+  const accessControlConditions = [
+    {
+      contractAddress: "",
+      standardContractType: "",
+      chain: "ethereum",
+      method: "eth_getBalance",
+      parameters: [":userAddress", "latest"],
+      returnValueTest: {
+        comparator: ">=",
+        value: "0",
+      },
+    },
+  ];
+
+  const code = `(async () => {
+    const decryptedImage = await Lit.Actions.decryptAndCombine({
+      accessControlConditions,
+      ciphertext,
+      dataToEncryptHash,
+      authSig: null,
+      chain: 'ethereum',
+    });
+
+    const response = await fetch("https://your-api-url.com/api/message", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ imageData: decryptedImage }),
+    });
+
+    const apiResponse = await response.json();
+    Lit.Actions.setResponse({ response: apiResponse });
+  })();`;
+
+  try {
+    const sessionSigs = await getSessionSigsViaAuthSig(signer);
+
+    const result = await client.executeJs({
+      code,
+      sessionSigs: sessionSigs,
+      jsParams: {
+        accessControlConditions,
+        ciphertext,
+        dataToEncryptHash,
+      },
+    });
+
+    console.log("Response from Lit Action:", result);
+    return result.response;
+  } catch (error) {
+    console.error("Error executing Lit Action:", error);
+    throw error;
+  }
 };

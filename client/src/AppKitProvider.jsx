@@ -10,7 +10,34 @@ const queryClient = new QueryClient();
 // 1. Get projectId from https://cloud.walletconnect.com
 const projectId = import.meta.env.VITE_APP_WALLETCONNECT_ID; // Replace with your WalletConnect project ID
 
-// 2. Create wagmiConfig
+// 2. Define Chronicle Yellowstone Lit Protocol Testnet chain
+const chronicleYellowstone = {
+  id: 175188, // Chain ID for Chronicle Yellowstone
+  name: 'Chronicle Yellowstone Testnet',
+  network: 'litProtocolTestnet',
+  nativeCurrency: {
+    name: 'tstLPX',
+    symbol: 'tstLPX',
+    decimals: 18,
+  },
+  rpcUrls: {
+    default: {
+      http: ['https://yellowstone-rpc.litprotocol.com'], // RPC server address for Yellowstone Testnet
+    },
+    public: {
+      http: ['https://yellowstone-rpc.litprotocol.com'],
+    },
+  },
+  blockExplorers: {
+    default: { name: 'Yellowstone Explorer', url: 'https://explorer.litprotocol.com/' }, // Placeholder, update with real explorer URL if applicable
+  },
+  testnet: true,
+};
+
+// 3. Add Chronicle Yellowstone Testnet to chains array
+const chains = [mainnet, arbitrum, chronicleYellowstone];
+
+// 4. Create wagmiConfig
 const metadata = {
   name: 'AppKit',
   description: 'AppKit Example',
@@ -18,14 +45,13 @@ const metadata = {
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
 };
 
-const chains = [mainnet, arbitrum];
 const config = defaultWagmiConfig({
   chains,
   projectId,
   metadata,
 });
 
-// 3. Create modal
+// 5. Create modal
 createWeb3Modal({
   metadata,
   wagmiConfig: config,

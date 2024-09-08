@@ -10,7 +10,7 @@ const AI = ({data}) => {
   return (
     // eslint-disable-next-line react-dom/validate-dom-nesting
     <div className='ai'>
-        <img src={logo} alt="logo" className="logo"/>
+        <img src={logo} alt="logo" className="chat-logo"/>
 
         {data.map((element, index) => (
           <div key={index} >{element}</div>

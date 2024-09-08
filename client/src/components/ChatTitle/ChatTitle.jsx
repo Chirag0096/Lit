@@ -2,9 +2,9 @@ import React from 'react'
 
 import './style.css';
 
-const ChatTitle = ({chat, currentChat, setcurrentChat}) => {
+const ChatTitle = ({chat, currentChat, setCurrentChat}) => {
   return (
-    <div className={`chat-title ${currentChat == chat.id ? 'active' : ''}`} onClick={() => setcurrentChat(chat.id)}>
+    <div className={`chat-title ${currentChat == chat.id ? 'active' : ''}`} onClick={() => setCurrentChat(chat.id)}>
       {chat.title}
     </div>
   )
